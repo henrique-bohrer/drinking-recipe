@@ -196,6 +196,7 @@ h1 {
     backdrop-filter: blur(12px);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .recipe-card::before {
@@ -306,6 +307,86 @@ h1 {
     margin-top: 15px;
     padding-top: 10px;
     border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* Expansível - Instruções */
+.expand-hint {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.recipe-card:hover .expand-hint {
+    color: var(--blue-accent);
+}
+
+.hint-icon {
+    transition: transform 0.3s ease;
+}
+
+.recipe-instructions {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, margin-top 0.5s ease-out;
+}
+
+.recipe-instructions strong {
+    color: var(--blue-accent);
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.instruction-list {
+    padding-left: 20px;
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.instruction-list li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.instruction-list li::marker {
+    color: var(--gold-accent);
+    font-weight: bold;
+}
+
+/* Estado Expandido */
+.recipe-card.expanded {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 229, 255, 0.3);
+}
+
+.recipe-card.expanded .recipe-instructions {
+    max-height: 500px; /* Suficiente para caber o texto */
+    opacity: 1;
+    margin-top: 15px;
+}
+
+.recipe-card.expanded .hint-icon {
+    transform: rotate(180deg);
+}
+
+.recipe-card.expanded .expand-hint .hint-text::before {
+    content: 'Ocultar montagem';
+    font-size: 0.85rem;
+}
+
+.recipe-card.expanded .expand-hint .hint-text {
+    font-size: 0; /* Esconde o texto original para mostrar o pseudo-elemento */
 }
 
 .no-results {
