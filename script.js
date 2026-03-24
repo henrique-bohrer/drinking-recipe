@@ -1,6 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Database de Receitas Clássicas
-    const database = [
+    // State
+    let currentLang = 'pt';
+    let activeTags = [];
+
+    // Language Dictionary
+    const i18n = {
+        pt: {
+            title: "NeoDrinks",
+            subtitle: "O que temos no bar hoje? Digite seus ingredientes e descubra o seu próximo drink.",
+            inputPlaceholder: "Ex: Limão Siciliano, Curaçao Blue, Água com gás (aperte Enter ou vírgula)",
+            noResults: "Nenhum drink clássico encontrado com esses ingredientes. Experimente adicionar mais itens!",
+            match100: "100% Match",
+            matchMissing: "Falta {n} item(s)",
+            ingredients: "Ingredientes:",
+            garnish: "Guarnição:",
+            instructions: "Passo a passo:",
+            viewAssembly: "Ver montagem do drink",
+            hideAssembly: "Ocultar montagem"
+        },
+        en: {
+            title: "NeoDrinks",
+            subtitle: "What's in the bar today? Enter your ingredients and discover your next drink.",
+            inputPlaceholder: "Ex: Lemon, Blue Curaçao, Sparkling water (press Enter or comma)",
+            noResults: "No classic drink found with these ingredients. Try adding more items!",
+            match100: "100% Match",
+            matchMissing: "Missing {n} item(s)",
+            ingredients: "Ingredients:",
+            garnish: "Garnish:",
+            instructions: "Step by step:",
+            viewAssembly: "View drink assembly",
+            hideAssembly: "Hide assembly"
+        }
+    };
+
+    // Database de Receitas Clássicas (PT)
+    const databasePt = [
         {
             id: "1",
             name: "Margarita",
@@ -139,14 +173,203 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
+    // Database de Receitas Clássicas (EN)
+    const databaseEn = [
+        {
+            id: "1",
+            name: "Margarita",
+            type: "Classic",
+            ingredients: ["Tequila", "Orange Liqueur", "Lime Juice", "Salt"],
+            garnish: "Lime wheel and salt rim",
+            instructions: [
+                "Rub a lime wedge over the rim of the glass and dip in salt.",
+                "In a shaker, add tequila, orange liqueur and lime juice.",
+                "Add ice and shake vigorously.",
+                "Strain into the prepared glass with fresh ice.",
+                "Garnish with the lime wheel."
+            ]
+        },
+        {
+            id: "2",
+            name: "Mojito",
+            type: "Classic",
+            ingredients: ["White Rum", "Mint", "Sugar", "Lime Juice", "Sparkling Water"],
+            garnish: "Mint sprig",
+            instructions: [
+                "In a tall glass, lightly muddle the mint with sugar and lime juice.",
+                "Add rum and mix well to dissolve the sugar.",
+                "Fill the glass with crushed or cubed ice.",
+                "Top with sparkling water and stir gently.",
+                "Garnish with a mint sprig."
+            ]
+        },
+        {
+            id: "3",
+            name: "Blue Lagoon",
+            type: "Classic",
+            ingredients: ["Vodka", "Blue Curaçao", "Lemonade", "Ice"],
+            garnish: "Lemon slice",
+            instructions: [
+                "Fill a highball glass with ice.",
+                "Add vodka and Blue Curaçao.",
+                "Top with lemonade.",
+                "Stir gently to mix the colors.",
+                "Garnish with a lemon slice."
+            ]
+        },
+        {
+            id: "4",
+            name: "Negroni",
+            type: "Classic",
+            ingredients: ["Gin", "Campari", "Sweet Vermouth"],
+            garnish: "Orange peel",
+            instructions: [
+                "In a rocks glass, add plenty of ice.",
+                "Pour in gin, Campari and sweet vermouth.",
+                "Stir gently for about 20 seconds to chill and slightly dilute.",
+                "Twist the orange peel over the drink to release essential oils and drop it in."
+            ]
+        },
+        {
+            id: "5",
+            name: "Old Fashioned",
+            type: "Classic",
+            ingredients: ["Bourbon", "Angostura", "Sugar", "Water"],
+            garnish: "Orange peel and cherry",
+            instructions: [
+                "In a rocks glass, place sugar, Angostura and a dash of water.",
+                "Muddle until sugar is dissolved.",
+                "Add a large ice cube and pour in the bourbon.",
+                "Stir gently.",
+                "Garnish with an orange peel (releasing the oils) and a cherry."
+            ]
+        },
+        {
+            id: "6",
+            name: "Dry Martini",
+            type: "Classic",
+            ingredients: ["Gin", "Dry Vermouth"],
+            garnish: "Olive",
+            instructions: [
+                "In a mixing glass filled with ice, add gin and dry vermouth.",
+                "Stir for about 30 seconds to chill well without clouding the drink.",
+                "Strain into a chilled martini glass.",
+                "Garnish with one or three olives on a pick."
+            ]
+        },
+        {
+            id: "7",
+            name: "Moscow Mule",
+            type: "Classic",
+            ingredients: ["Vodka", "Ginger Beer", "Lime Juice"],
+            garnish: "Lime slice and mint",
+            instructions: [
+                "In a copper mug, squeeze the lime juice.",
+                "Add vodka and plenty of crushed ice.",
+                "Top with ginger beer.",
+                "Stir gently.",
+                "Garnish with a lime slice and a mint sprig."
+            ]
+        },
+        {
+            id: "8",
+            name: "Piña Colada",
+            type: "Classic",
+            ingredients: ["White Rum", "Pineapple Juice", "Coconut Milk"],
+            garnish: "Pineapple slice",
+            instructions: [
+                "In a blender, add rum, pineapple juice, coconut milk and ice.",
+                "Blend until smooth and creamy.",
+                "Pour into a tall glass (hurricane).",
+                "Garnish with a pineapple slice on the rim."
+            ]
+        },
+        {
+            id: "9",
+            name: "Cosmopolitan",
+            type: "Classic",
+            ingredients: ["Vodka", "Orange Liqueur", "Cranberry Juice", "Lime Juice"],
+            garnish: "Orange peel",
+            instructions: [
+                "In a shaker with ice, add vodka, orange liqueur, cranberry juice and lime juice.",
+                "Shake vigorously.",
+                "Double strain into a chilled martini glass.",
+                "Twist an orange peel over the drink to release oils and garnish."
+            ]
+        },
+        {
+            id: "10",
+            name: "Caipirinha",
+            type: "Classic",
+            ingredients: ["Cachaça", "Lime", "Sugar"],
+            garnish: "Lime slice",
+            instructions: [
+                "Cut the lime into pieces (removing the white pith to avoid bitterness).",
+                "In a rocks glass, muddle the lime with sugar.",
+                "Add ice to the top of the glass.",
+                "Pour in the cachaça and stir well from bottom to top.",
+                "Garnish with a thin slice of lime."
+            ]
+        }
+    ];
+
+    let database = databasePt;
+
     // Elementos DOM
+    const ingredientsDatalist = document.getElementById('ingredientsDatalist');
     const ingredientInput = document.getElementById('ingredientInput');
+    const titleText = document.getElementById('titleText');
+    const subtitleText = document.getElementById('subtitleText');
+    const btnPt = document.getElementById('btn-pt');
+    const btnEn = document.getElementById('btn-en');
     const tagsContainer = document.getElementById('tagsContainer');
     const resultsSection = document.getElementById('resultsSection');
     const recipesContainer = document.getElementById('recipesContainer');
 
-    // Estado Local
-    let activeTags = [];
+    // Fetch Ingredients from TheCocktailDB
+    async function fetchIngredients() {
+        try {
+            const response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list');
+            const data = await response.json();
+
+            if (data && data.drinks) {
+                ingredientsDatalist.innerHTML = '';
+                data.drinks.forEach(drink => {
+                    const option = document.createElement('option');
+                    option.value = drink.strIngredient1;
+                    ingredientsDatalist.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching ingredients:", error);
+        }
+    }
+
+    // Initialize ingredients list
+    fetchIngredients();
+
+    // Lógica de Idioma
+    function setLanguage(lang) {
+        currentLang = lang;
+        database = lang === 'pt' ? databasePt : databaseEn;
+
+        // Update Buttons
+        btnPt.classList.toggle('active', lang === 'pt');
+        btnEn.classList.toggle('active', lang === 'en');
+
+        // Update Static Texts
+        titleText.textContent = i18n[lang].title;
+        subtitleText.textContent = i18n[lang].subtitle;
+        ingredientInput.placeholder = i18n[lang].inputPlaceholder;
+
+        // Re-render results if there are active tags
+        if (activeTags.length > 0) {
+            triggerMatchmaking();
+        }
+    }
+
+    btnPt.addEventListener('click', () => setLanguage('pt'));
+    btnEn.addEventListener('click', () => setLanguage('en'));
 
     // Lógica do Input de Tags
     ingredientInput.addEventListener('keydown', function(e) {
@@ -201,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ingredientInput.value = '';
     }
 
-    function triggerMatchmaking() {
+    async function triggerMatchmaking() {
         if (activeTags.length === 0) {
             // Esconder resultados se não houver tags
             resultsSection.classList.remove('show');
@@ -218,14 +441,90 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsSection.classList.add('show');
         }, 10);
 
-        const results = matchIngredients(activeTags);
-        renderResults(results);
+        recipesContainer.innerHTML = '<div class="no-results" style="color: var(--blue-accent);">Loading...</div>';
+
+        // Fetch drinks based on active tags
+        let apiRecipes = [];
+
+        // Helper to fetch details
+        async function fetchDrinkDetails(idDrink) {
+            try {
+                const res = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${idDrink}`);
+                if (!res.ok) return null;
+                const data = await res.json();
+                if (data && data.drinks && data.drinks[0]) {
+                    const d = data.drinks[0];
+                    const ingredients = [];
+                    for (let i = 1; i <= 15; i++) {
+                        const ing = d[`strIngredient${i}`];
+                        if (ing && ing.trim() !== '') {
+                            ingredients.push(ing.trim());
+                        }
+                    }
+
+                    let instructions = [];
+                    let strInst = currentLang === 'pt' && d.strInstructionsIT ? d.strInstructionsIT : d.strInstructions;
+                    if (!strInst) strInst = d.strInstructions;
+                    if (strInst) {
+                        instructions = strInst.split('.').map(s => s.trim()).filter(s => s.length > 0);
+                    }
+
+                    return {
+                        id: d.idDrink,
+                        name: d.strDrink,
+                        type: 'API Recipe',
+                        ingredients: ingredients,
+                        garnish: null,
+                        instructions: instructions
+                    };
+                }
+            } catch (e) {
+                console.error('Error looking up drink details', e);
+            }
+            return null;
+        }
+
+        try {
+            // we will search by the first tag mainly because the free API filter by ingredient only allows 1 ingredient
+            const firstTag = activeTags[0];
+            const res = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(firstTag)}`);
+            if (res.ok) {
+                const text = await res.text();
+                // TheCocktailDB returns empty or no data found string if nothing is found
+                if (text && text.trim() !== '' && text.includes('drinks')) {
+                    const data = JSON.parse(text);
+                    if (data && data.drinks) {
+                        const apiDrinks = data.drinks.slice(0, 8); // Limit to 8 for performance in lookup
+                        const detailsPromises = apiDrinks.map(d => fetchDrinkDetails(d.idDrink));
+                        const detailsResults = await Promise.all(detailsPromises);
+                        apiRecipes = detailsResults.filter(r => r !== null);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching drinks from API', e);
+        }
+
+        const combinedDatabase = [...database, ...apiRecipes];
+        const results = matchIngredients(activeTags, combinedDatabase);
+
+        // Remove duplicates by name
+        const uniqueResults = [];
+        const seenNames = new Set();
+        for (const r of results) {
+            if (!seenNames.has(r.name)) {
+                seenNames.add(r.name);
+                uniqueResults.push(r);
+            }
+        }
+
+        renderResults(uniqueResults);
     }
 
-    function matchIngredients(userIngredients) {
+    function matchIngredients(userIngredients, searchDatabase) {
         const matches = [];
 
-        database.forEach(recipe => {
+        searchDatabase.forEach(recipe => {
             let matchCount = 0;
             const missingIngredients = [];
             const ownedIngredients = [];
@@ -264,16 +563,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderResults(results) {
         recipesContainer.innerHTML = '';
+        const texts = i18n[currentLang];
 
         if (results.length === 0) {
-            recipesContainer.innerHTML = '<div class="no-results">Nenhum drink clássico encontrado com esses ingredientes. Experimente adicionar mais itens!</div>';
+            recipesContainer.innerHTML = `<div class="no-results">${texts.noResults}</div>`;
             return;
         }
 
         results.forEach(recipe => {
             const is100Match = recipe.matchPercentage === 100;
             const badgeClass = is100Match ? 'match-badge' : 'match-badge partial';
-            const badgeText = is100Match ? '100% Match' : `Falta ${recipe.missingIngredients.length} item(s)`;
+            const badgeText = is100Match ? texts.match100 : texts.matchMissing.replace('{n}', recipe.missingIngredients.length);
 
             const card = document.createElement('div');
             card.className = 'recipe-card';
@@ -303,21 +603,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="recipe-type">${recipe.type}</span>
 
                 <div class="recipe-detail">
-                    <strong>Ingredientes:</strong>
+                    <strong>${texts.ingredients}</strong>
                     <ul class="ingredient-list">
                         ${ingredientsHTML}
                     </ul>
                 </div>
 
-                ${recipe.garnish ? `<div class="garnish">Guarnição: ${recipe.garnish}</div>` : ''}
+                ${recipe.garnish ? `<div class="garnish">${texts.garnish} ${recipe.garnish}</div>` : ''}
 
                 <div class="expand-hint">
-                    <span class="hint-text">Ver montagem do drink</span>
+                    <span class="hint-text" data-hide-text="${texts.hideAssembly}">${texts.viewAssembly}</span>
                     <span class="hint-icon">▼</span>
                 </div>
 
                 <div class="recipe-instructions">
-                    <strong>Passo a passo:</strong>
+                    <strong>${texts.instructions}</strong>
                     <ol class="instruction-list">
                         ${instructionsHTML}
                     </ol>
