@@ -9,10 +9,16 @@
 </head>
 <body>
     <div class="glow-bg"></div>
+
+    <div class="language-selector">
+        <button id="btn-pt" class="lang-btn active">PT-BR</button>
+        <button id="btn-en" class="lang-btn">EN-US</button>
+    </div>
+
     <div class="container">
         <header class="hero-section">
-            <h1>NeoDrinks</h1>
-            <p class="subtitle">O que temos no bar hoje? Digite seus ingredientes e descubra o seu próximo drink.</p>
+            <h1 id="titleText">NeoDrinks</h1>
+            <p class="subtitle" id="subtitleText">O que temos no bar hoje? Digite seus ingredientes e descubra o seu próximo drink.</p>
         </header>
 
         <main>
@@ -20,7 +26,8 @@
                 <div class="search-wrapper">
                     <div id="tagsContainer" class="tags-container">
                         <!-- Tags aparecerão aqui -->
-                        <input type="text" id="ingredientInput" placeholder="Ex: Limão Siciliano, Curaçao Blue, Água com gás (aperte Enter ou vírgula)" autocomplete="off">
+                        <input type="text" id="ingredientInput" placeholder="Ex: Limão Siciliano, Curaçao Blue, Água com gás (aperte Enter ou vírgula)" autocomplete="off" list="ingredientsDatalist">
+                        <datalist id="ingredientsDatalist"></datalist>
                     </div>
                 </div>
             </section>
