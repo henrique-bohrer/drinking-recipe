@@ -3,96 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoDrinks - Crie sua Receita</title>
+    <title>NeoDrinks - Motor Inteligente de Mixologia</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="glow-bg"></div>
     <div class="container">
-        <header>
-            <h1>NeoDrinks <span class="accent">Laboratório</span></h1>
-            <p class="subtitle">Sintetize suas receitas de drinks clássicos ou autorais</p>
+        <header class="hero-section">
+            <h1>NeoDrinks</h1>
+            <p class="subtitle">O que temos no bar hoje? Digite seus ingredientes e descubra o seu próximo drink.</p>
         </header>
 
         <main>
-            <section class="recipe-form-section">
-                <h2>Nova Receita</h2>
-                <form id="recipeForm">
-                    <div class="form-group">
-                        <label for="recipeName">Nome do Drink</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="recipeName" name="recipeName" placeholder="Ex: Cyber Margarita" required>
-                            <div class="tip" title="Dê um nome marcante para sua criação!">
-                                <svg><use href="#icon-lightbulb"></use></svg>
-                            </div>
-                        </div>
+            <section class="search-section">
+                <div class="search-wrapper">
+                    <div id="tagsContainer" class="tags-container">
+                        <!-- Tags aparecerão aqui -->
+                        <input type="text" id="ingredientInput" placeholder="Ex: Limão Siciliano, Curaçao Blue, Água com gás (aperte Enter ou vírgula)" autocomplete="off">
                     </div>
-
-                    <div class="form-group">
-                        <label>Estações de Inspiração</label>
-                        <div class="input-wrapper">
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" name="season" value="Primavera"> <span class="custom-checkbox">Primavera</span></label>
-                                <label><input type="checkbox" name="season" value="Verão"> <span class="custom-checkbox">Verão</span></label>
-                                <label><input type="checkbox" name="season" value="Outono"> <span class="custom-checkbox">Outono</span></label>
-                                <label><input type="checkbox" name="season" value="Inverno"> <span class="custom-checkbox">Inverno</span></label>
-                            </div>
-                            <div class="tip" title="Qual a vibe do seu drink? Refrescante para o verão ou aconchegante para o inverno?">
-                                <svg><use href="#icon-lightbulb"></use></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="beverageSet">Conjuntos de Bebidas (Mixers/Ingredientes)</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="beverageSet" name="beverageSet" placeholder="Ex: Suco de limão, Xarope simples, Sal" required>
-                            <div class="tip" title="Quais misturas e ingredientes darão o sabor único ao seu drink?">
-                                <svg><use href="#icon-lightbulb"></use></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="distilledSpirit">Bebida Destilada Principal</label>
-                        <div class="input-wrapper">
-                            <select id="distilledSpirit" name="distilledSpirit" required>
-                                <option value="" disabled selected>Selecione o destilado...</option>
-                                <option value="Vodka">Vodka</option>
-                                <option value="Gin">Gin</option>
-                                <option value="Rum">Rum</option>
-                                <option value="Tequila">Tequila</option>
-                                <option value="Whisky">Whisky</option>
-                                <option value="Cachaça">Cachaça</option>
-                                <option value="Brandy / Conhaque">Brandy / Conhaque</option>
-                                <option value="Outro">Outro</option>
-                            </select>
-                            <div class="tip" title="A base alcoólica do seu drink. Escolha com sabedoria.">
-                                <svg><use href="#icon-lightbulb"></use></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-submit">Sintetizar Drink</button>
-                </form>
+                </div>
             </section>
 
-            <section class="recipes-display-section">
-                <h2>Seus Protocolos (Receitas)</h2>
+            <section id="resultsSection" class="results-section hidden">
                 <div id="recipesContainer" class="recipes-grid">
-                    <!-- Receitas aparecerão aqui -->
+                    <!-- Receitas sugeridas aparecerão aqui -->
                 </div>
             </section>
         </main>
     </div>
-
-    <!-- SVG Ícones -->
-    <svg style="display: none;">
-        <symbol id="icon-lightbulb" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6A4.997 4.997 0 0 1 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
-        </symbol>
-    </svg>
 
     <script src="script.js"></script>
 </body>
