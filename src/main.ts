@@ -8,6 +8,7 @@ import {
   renderHeader,
   renderMobileBottomNav,
 } from './ui/appShell';
+import { renderHouseMenuBook } from './ui/menuBook';
 import { renderBarPantry } from './ui/barPantry';
 import { renderExploreResults, renderExploreToolbar } from './ui/recipeGrid';
 import { renderRouletteView } from './ui/rouletteView';
@@ -29,11 +30,17 @@ function bootstrap(): void {
 
   // Persistent sub-slots for Explore view so typing in search/pantry never unmounts inputs
   const exploreContainer = el('div');
+  const menuBookSlot = el('div');
+  const pantryDivider = el('div', {
+    className: 'border-t border-[var(--border-subtle)] pt-8 sm:pt-10',
+    attrs: { id: 'pantry-anchor' },
+  });
   const heroSlot = el('div');
   const pantrySlot = el('div');
   const toolbarSlot = el('div');
   const resultsSlot = el('div');
-  exploreContainer.append(heroSlot, pantrySlot, toolbarSlot, resultsSlot);
+  pantryDivider.append(heroSlot, pantrySlot, toolbarSlot, resultsSlot);
+  exploreContainer.append(menuBookSlot, pantryDivider);
 
   root.replaceChildren(headerSlot, mainSlot, footerSlot, mobileNavSlot, modalSlot);
 
@@ -70,6 +77,7 @@ function bootstrap(): void {
       }
 
       if (tabSwitchedToExplore || prev.language !== state.language) {
+        menuBookSlot.replaceChildren(renderHouseMenuBook(state));
         heroSlot.replaceChildren(renderExploreHero(state));
       }
 
@@ -117,7 +125,21 @@ function bootstrap(): void {
         resultsSlot.replaceChildren(renderExploreResults(state));
       }
     } else if (state.activeTab === 'roulette') {
-      mainSlot.replaceChildren(renderRouletteView(state));
+      const rouletteChanged =
+        !prev ||
+        prev.activeTab !== 'roulette' ||
+        prev.language !== state.language ||
+        prev.rouletteShowQuiz !== state.rouletteShowQuiz ||
+        prev.rouletteProfile !== state.rouletteProfile ||
+        prev.rouletteDeck[0]?.id !== state.rouletteDeck[0]?.id ||
+        prev.rouletteDeck[1]?.id !== state.rouletteDeck[1]?.id ||
+        prev.rouletteLiked !== state.rouletteLiked ||
+        prev.rouletteHistory !== state.rouletteHistory ||
+        (state.rouletteDeck.length === 0 && prev.rouletteLoading !== state.rouletteLoading);
+
+      if (rouletteChanged) {
+        mainSlot.replaceChildren(renderRouletteView(state));
+      }
     } else if (state.activeTab === 'quiz') {
       mainSlot.replaceChildren(renderQuizView(state));
     } else if (state.activeTab === 'favorites') {

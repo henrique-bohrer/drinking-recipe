@@ -24,8 +24,7 @@ export function renderHeader(state: AppState): HTMLElement {
   ];
 
   const header = el('header', {
-    className:
-      'sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[var(--bg-canvas)]/95 backdrop-blur-xs',
+    className: 'sticky top-0 z-30 border-b glass-nav',
   });
 
   const inner = el('div', {
@@ -40,7 +39,7 @@ export function renderHeader(state: AppState): HTMLElement {
     children: [
       el('span', {
         className:
-          'w-9 h-9 rounded-xl bg-[var(--accent-primary)] text-[var(--ink-on-accent)] flex items-center justify-center shadow-xs group-hover:scale-[1.03] transition-transform',
+          'btn-primary w-9 h-9 rounded-xl !p-0 flex items-center justify-center group-hover:scale-[1.04]',
         children: [icon(Wine, 'w-4 h-4')],
       }),
       el('div', {
@@ -59,18 +58,16 @@ export function renderHeader(state: AppState): HTMLElement {
     ],
   });
 
-  // Desktop Navigation (centered)
+  // Desktop Floating Frosted Pill Navigation
   const desktopNav = el('nav', {
-    className: 'hidden md:flex items-center gap-1 p-1 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)]',
+    className: 'hidden md:inline-flex btn-group-dynamic p-1.5 rounded-full glass-panel',
     attrs: { 'aria-label': 'Primary navigation' },
     children: navItems.map((item) => {
       const active = activeTab === item.id;
       return el('button', {
-        className: `inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer ${
-          active
-            ? 'bg-[var(--accent-primary)] text-[var(--ink-on-accent)]'
-            : 'text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] hover:bg-[var(--bg-muted)]'
-        }`,
+        className: active
+          ? 'btn-primary px-4 py-1.5 rounded-full text-sm font-semibold'
+          : 'inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] hover:bg-[var(--bg-muted)]/70 cursor-pointer active:scale-[0.97]',
         attrs: { type: 'button', 'aria-current': active ? 'page' : 'false' },
         onClick: () => store.setActiveTab(item.id),
         children: [
@@ -79,7 +76,7 @@ export function renderHeader(state: AppState): HTMLElement {
           item.badge !== undefined &&
             item.badge > 0 &&
             el('span', {
-              className: `ml-0.5 text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+              className: `ml-0.5 text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
                 active
                   ? 'bg-white/20 text-[var(--ink-on-accent)]'
                   : 'bg-[var(--accent-warm-soft)] text-[var(--accent-warm)]'
@@ -91,20 +88,19 @@ export function renderHeader(state: AppState): HTMLElement {
     }),
   });
 
-  // Right Utilities: Language toggle + Paper/Speakeasy theme toggle
+  // Right Utilities: Frosted Language Switch + Theme Toggle
   const utilities = el('div', {
     className: 'flex items-center gap-2',
     children: [
       el('div', {
-        className:
-          'inline-flex rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-0.5 text-xs font-mono',
+        className: 'btn-group-dynamic rounded-full glass-panel p-1 text-xs font-mono',
         attrs: { role: 'group', 'aria-label': 'Language' },
         children: (['pt', 'en'] as const).map((lang) => {
           const active = language === lang;
           return el('button', {
-            className: `px-2.5 py-1 rounded-full cursor-pointer transition-colors ${
+            className: `px-2.5 py-1 rounded-full cursor-pointer active:scale-[0.95] ${
               active
-                ? 'bg-[var(--ink-primary)] text-[var(--bg-surface)] font-semibold'
+                ? 'bg-[var(--ink-primary)] text-[var(--bg-surface)] font-semibold shadow-xs'
                 : 'text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]'
             }`,
             attrs: { type: 'button', 'aria-pressed': String(active) },
@@ -114,8 +110,7 @@ export function renderHeader(state: AppState): HTMLElement {
         }),
       }),
       el('button', {
-        className:
-          'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-xs font-medium text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] hover:border-[var(--border-strong)] transition-colors cursor-pointer',
+        className: 'btn-glass px-3 py-1.5 rounded-full text-xs font-medium text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]',
         attrs: {
           type: 'button',
           'aria-label': theme === 'paper' ? t(language, 'themeSpeakeasy') : t(language, 'themePaper'),
@@ -140,7 +135,7 @@ export function renderHeader(state: AppState): HTMLElement {
 export function renderExploreHero(state: AppState): HTMLElement {
   const { language } = state;
   return el('section', {
-    className: 'mb-7 sm:mb-9 pt-2',
+    className: 'mb-7 sm:mb-9 pt-2 animate-fade-up',
     children: [
       el('div', {
         className: 'flex items-center gap-3 mb-2.5',
@@ -154,9 +149,9 @@ export function renderExploreHero(state: AppState): HTMLElement {
           }),
         ],
       }),
-      el('h1', {
+      el('h2', {
         className:
-          'text-3xl sm:text-5xl font-semibold text-[var(--ink-primary)] tracking-tight leading-[1.1] max-w-2xl',
+          'text-2xl sm:text-4xl font-semibold text-[var(--ink-primary)] tracking-tight leading-[1.12] max-w-2xl',
         text: t(language, 'heroTitle'),
       }),
       el('p', {
@@ -179,8 +174,7 @@ export function renderMobileBottomNav(state: AppState): HTMLElement {
   ];
 
   return el('nav', {
-    className:
-      'md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 backdrop-blur-xs pb-safe',
+    className: 'md:hidden fixed bottom-0 left-0 right-0 z-40 border-t glass-nav pb-safe',
     attrs: { 'aria-label': 'Mobile navigation' },
     children: [
       el('div', {
@@ -188,7 +182,7 @@ export function renderMobileBottomNav(state: AppState): HTMLElement {
         children: navItems.map((item) => {
           const active = activeTab === item.id;
           return el('button', {
-            className: `relative flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl text-[11px] font-semibold transition-colors cursor-pointer ${
+            className: `relative flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl text-[11px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 ${
               active ? 'text-[var(--accent-primary)]' : 'text-[var(--ink-muted)]'
             }`,
             attrs: { type: 'button', 'aria-current': active ? 'page' : 'false' },
@@ -198,8 +192,10 @@ export function renderMobileBottomNav(state: AppState): HTMLElement {
             },
             children: [
               el('span', {
-                className: `relative px-3 py-1 rounded-full transition-colors ${
-                  active ? 'bg-[var(--accent-primary-soft)]' : ''
+                className: `relative px-3.5 py-1 rounded-full transition-all duration-300 ${
+                  active
+                    ? 'bg-[var(--accent-primary-soft)] shadow-[inset_0_1px_0_var(--glass-highlight)] scale-105'
+                    : ''
                 }`,
                 children: [
                   icon(item.iconNode, 'w-5 h-5'),
@@ -225,8 +221,6 @@ export function renderFooter(state: AppState): HTMLElement {
   return el('footer', {
     className:
       'mt-14 pt-6 pb-24 md:pb-10 border-t border-[var(--border-subtle)] text-center text-xs text-[var(--ink-muted)]',
-    children: [
-      el('p', { text: t(state.language, 'footerNote') }),
-    ],
+    children: [el('p', { text: t(state.language, 'footerNote') })],
   });
 }

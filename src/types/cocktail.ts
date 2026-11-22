@@ -60,6 +60,21 @@ export interface QuizAnswers {
   complexity: 'quick' | 'craft' | null;
 }
 
+export type RouletteGender = 'male' | 'female' | 'other';
+
+export type RoulettePalate = 'sweet' | 'citrus' | 'bitter' | 'balanced';
+
+export interface RouletteProfile {
+  gender: RouletteGender;
+  palate: RoulettePalate;
+  age: number;
+}
+
+export interface RouletteSwipeRecord {
+  recipe: CocktailRecipe;
+  action: 'like' | 'pass';
+}
+
 export interface AppPreferences {
   language: Language;
   theme: ThemeMode;
@@ -82,9 +97,13 @@ export interface AppState {
   selectedRecipe: MatchedRecipe | null;
   favorites: Record<string, CocktailRecipe>;
   tastingNotes: Record<string, TastingNote>;
-  rouletteRecipe: CocktailRecipe | null;
+  rouletteProfile: RouletteProfile | null;
+  rouletteShowQuiz: boolean;
+  rouletteDeck: CocktailRecipe[];
+  rouletteSeenIds: string[];
+  rouletteLiked: CocktailRecipe[];
+  rouletteHistory: RouletteSwipeRecord[];
   rouletteLoading: boolean;
-  rouletteMood: 'any' | 'refreshing' | 'classic' | 'zero-proof';
   quizStep: number;
   quizAnswers: QuizAnswers;
   quizResults: CocktailRecipe[];

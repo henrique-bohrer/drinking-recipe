@@ -1,4 +1,4 @@
-import { ArrowLeft, RotateCcw, Sparkles } from 'lucide';
+import { ArrowLeft, ArrowRight, RotateCcw, Sparkles } from 'lucide';
 import type { AppState, QuizAnswers } from '../types/cocktail';
 import { t } from '../i18n/translations';
 import { matchRecipesWithBar } from '../utils/matcher';
@@ -49,8 +49,7 @@ export function renderQuizView(state: AppState): HTMLElement {
           ],
         }),
         el('button', {
-          className:
-            'inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[var(--border-strong)] text-[var(--ink-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer',
+          className: 'btn-glass px-4 py-2 rounded-xl text-xs font-semibold',
           attrs: { type: 'button' },
           onClick: () => store.resetQuiz(),
           children: [icon(RotateCcw, 'w-3.5 h-3.5'), el('span', { text: t(language, 'quizRestart') })],
@@ -78,7 +77,7 @@ export function renderQuizView(state: AppState): HTMLElement {
     wrapper.appendChild(
       el('div', {
         className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5',
-        children: matchedPicks.map((r) => createRecipeCard(r, state)),
+        children: matchedPicks.map((r, idx) => createRecipeCard(r, state, idx)),
       })
     );
     return wrapper;
@@ -143,22 +142,28 @@ export function renderQuizView(state: AppState): HTMLElement {
 
     card.appendChild(
       el('div', {
-        className: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
+        className: 'grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fade-up',
         children: options.map((opt) =>
           el('button', {
             className:
-              'text-left p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-canvas)] hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)]/40 transition-all cursor-pointer group',
+              'btn-glass !justify-between !items-start !whitespace-normal text-left p-4 rounded-2xl group w-full',
             attrs: { type: 'button' },
             onClick: () => store.setQuizAnswer('mood', opt.value),
             children: [
-              el('p', {
-                className: 'font-semibold text-[var(--ink-primary)] group-hover:text-[var(--accent-primary)]',
-                text: opt.title,
+              el('div', {
+                className: 'min-w-0 pr-2',
+                children: [
+                  el('p', {
+                    className: 'font-semibold text-[var(--ink-primary)] group-hover:text-[var(--accent-primary)] transition-colors',
+                    text: opt.title,
+                  }),
+                  el('p', {
+                    className: 'text-xs text-[var(--ink-secondary)] mt-1 leading-relaxed',
+                    text: opt.desc,
+                  }),
+                ],
               }),
-              el('p', {
-                className: 'text-xs text-[var(--ink-secondary)] mt-1 leading-relaxed',
-                text: opt.desc,
-              }),
+              icon(ArrowRight, 'w-4 h-4 shrink-0 mt-1 text-[var(--ink-muted)] group-hover:text-[var(--accent-primary)] icon-glide-right'),
             ],
           })
         ),
@@ -184,10 +189,10 @@ export function renderQuizView(state: AppState): HTMLElement {
 
     card.appendChild(
       el('div', {
-        className: 'grid grid-cols-2 sm:grid-cols-3 gap-3',
+        className: 'grid grid-cols-2 sm:grid-cols-3 gap-3 animate-fade-up',
         children: bases.map((b) =>
           el('button', {
-            className: `p-3.5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-canvas)] text-sm font-semibold text-[var(--ink-primary)] hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)]/40 hover:text-[var(--accent-primary)] transition-all cursor-pointer ${
+            className: `btn-glass p-3.5 rounded-2xl text-sm font-semibold text-[var(--ink-primary)] hover:text-[var(--accent-primary)] ${
               b.value === 'any' ? 'col-span-2 sm:col-span-3' : ''
             }`,
             attrs: { type: 'button' },
@@ -220,22 +225,28 @@ export function renderQuizView(state: AppState): HTMLElement {
 
     card.appendChild(
       el('div', {
-        className: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
+        className: 'grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fade-up',
         children: complexities.map((c) =>
           el('button', {
             className:
-              'text-left p-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-canvas)] hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)]/40 transition-all cursor-pointer group',
+              'btn-glass !justify-between !items-start !whitespace-normal text-left p-5 rounded-2xl group w-full',
             attrs: { type: 'button' },
             onClick: () => store.setQuizAnswer('complexity', c.value),
             children: [
-              el('p', {
-                className: 'font-semibold text-[var(--ink-primary)] group-hover:text-[var(--accent-primary)]',
-                text: c.title,
+              el('div', {
+                className: 'min-w-0 pr-2',
+                children: [
+                  el('p', {
+                    className: 'font-semibold text-[var(--ink-primary)] group-hover:text-[var(--accent-primary)] transition-colors',
+                    text: c.title,
+                  }),
+                  el('p', {
+                    className: 'text-xs text-[var(--ink-secondary)] mt-1.5 leading-relaxed',
+                    text: c.desc,
+                  }),
+                ],
               }),
-              el('p', {
-                className: 'text-xs text-[var(--ink-secondary)] mt-1.5 leading-relaxed',
-                text: c.desc,
-              }),
+              icon(ArrowRight, 'w-4 h-4 shrink-0 mt-1 text-[var(--ink-muted)] group-hover:text-[var(--accent-primary)] icon-glide-right'),
             ],
           })
         ),

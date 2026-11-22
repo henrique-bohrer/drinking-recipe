@@ -1,10 +1,11 @@
-import type { AppPreferences, CocktailRecipe, TastingNote } from '../types/cocktail';
+import type { AppPreferences, CocktailRecipe, RouletteProfile, TastingNote } from '../types/cocktail';
 
 const KEYS = {
   PREFS: 'neodrinks:prefs:v2',
   BAR: 'neodrinks:bar:v2',
   FAVORITES: 'neodrinks:favorites:v2',
   NOTES: 'neodrinks:notes:v2',
+  ROULETTE_PROFILE: 'neodrinks:roulette-profile:v2',
   INGREDIENT_CATALOG: 'neodrinks:catalog:v2',
   TRANSLATION_CACHE: 'neodrinks:translations:v2',
 } as const;
@@ -61,6 +62,13 @@ export const storage = {
   },
   saveTastingNotes(notes: Record<string, TastingNote>): void {
     safeWrite(KEYS.NOTES, notes);
+  },
+
+  loadRouletteProfile(): RouletteProfile | null {
+    return safeRead<RouletteProfile | null>(KEYS.ROULETTE_PROFILE, null);
+  },
+  saveRouletteProfile(profile: RouletteProfile): void {
+    safeWrite(KEYS.ROULETTE_PROFILE, profile);
   },
 
   loadIngredientCatalog(): string[] | null {

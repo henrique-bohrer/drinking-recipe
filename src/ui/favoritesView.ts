@@ -1,4 +1,4 @@
-import { Bookmark, Star, Trash2 } from 'lucide';
+import { ArrowRight, Bookmark, Star, Trash2 } from 'lucide';
 import type { AppState } from '../types/cocktail';
 import { t } from '../i18n/translations';
 import { el, icon } from '../utils/dom';
@@ -51,11 +51,13 @@ export function renderFavoritesView(state: AppState): HTMLElement {
             text: t(language, 'favoritesEmptyBody'),
           }),
           el('button', {
-            className:
-              'mt-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--accent-primary)] text-[var(--ink-on-accent)] hover:bg-[var(--accent-primary-hover)] transition-colors cursor-pointer',
+            className: 'btn-primary mt-2 px-5 py-2.5 rounded-xl text-sm font-semibold',
             attrs: { type: 'button' },
             onClick: () => store.setActiveTab('explore'),
-            text: t(language, 'favoritesExploreBtn'),
+            children: [
+              el('span', { text: t(language, 'favoritesExploreBtn') }),
+              icon(ArrowRight, 'w-4 h-4 icon-glide-right'),
+            ],
           }),
         ],
       })
@@ -65,11 +67,12 @@ export function renderFavoritesView(state: AppState): HTMLElement {
 
   const grid = el('div', {
     className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5',
-    children: savedList.map((recipe) => {
+    children: savedList.map((recipe, idx) => {
       const note = tastingNotes[recipe.id];
       const card = el('article', {
         className:
-          'group editorial-card editorial-card-interactive rounded-2xl overflow-hidden flex flex-col cursor-pointer',
+          'group editorial-card editorial-card-interactive rounded-2xl overflow-hidden flex flex-col cursor-pointer animate-fade-up',
+        attrs: { style: `animation-delay: ${Math.min(idx * 40, 240)}ms;` },
         onClick: () => store.openRecipe(recipe),
       });
 
@@ -77,7 +80,7 @@ export function renderFavoritesView(state: AppState): HTMLElement {
       art.appendChild(
         el('button', {
           className:
-            'absolute top-3 right-3 w-8 h-8 rounded-full bg-[var(--bg-surface)]/95 border border-[var(--border-subtle)] text-[var(--ink-secondary)] hover:text-[var(--accent-warm)] flex items-center justify-center cursor-pointer',
+            'glass-badge absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 active:scale-90',
           attrs: { type: 'button', 'aria-label': t(language, 'favoritesRemove') },
           onClick: (ev) => {
             ev.stopPropagation();
@@ -120,8 +123,11 @@ export function renderFavoritesView(state: AppState): HTMLElement {
               text: `“${note.note}”`,
             }),
           el('div', {
-            className: 'mt-auto pt-2 text-xs font-semibold text-[var(--accent-primary)]',
-            text: `${t(language, 'openRecipe')} →`,
+            className: 'mt-auto pt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent-primary)]',
+            children: [
+              el('span', { text: t(language, 'openRecipe') }),
+              icon(ArrowRight, 'w-3.5 h-3.5 icon-glide-right'),
+            ],
           }),
         ],
       });

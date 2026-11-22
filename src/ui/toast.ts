@@ -18,9 +18,12 @@ export function showToast(message: string, variant: 'success' | 'info' = 'succes
   const root = ensureContainer();
   const toast = el('div', {
     className:
-      'pointer-events-auto animate-fade-up flex items-center gap-2.5 px-4 py-2.5 rounded-full text-sm font-medium border border-[var(--border-strong)] bg-[var(--ink-primary)] text-[var(--bg-surface)] shadow-lg',
+      'pointer-events-auto animate-pop glass-panel flex items-center gap-2.5 px-4 py-2.5 rounded-full text-sm font-medium text-[var(--ink-primary)] shadow-xl',
     children: [
-      icon(variant === 'success' ? CheckCircle2 : Info, 'w-4 h-4 shrink-0 text-[var(--accent-amber)]'),
+      icon(
+        variant === 'success' ? CheckCircle2 : Info,
+        `w-4 h-4 shrink-0 ${variant === 'success' ? 'text-[var(--accent-primary)]' : 'text-[var(--accent-amber)]'}`
+      ),
       el('span', { text: message }),
     ],
   });
@@ -28,8 +31,8 @@ export function showToast(message: string, variant: 'success' | 'info' = 'succes
   root.appendChild(toast);
   window.setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateY(6px)';
-    toast.style.transition = 'opacity 200ms ease, transform 200ms ease';
-    window.setTimeout(() => toast.remove(), 220);
+    toast.style.transform = 'translateY(8px) scale(0.96)';
+    toast.style.transition = 'opacity 240ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1)';
+    window.setTimeout(() => toast.remove(), 250);
   }, 2600);
 }

@@ -7,6 +7,7 @@ import type {
   MatchedRecipe,
   MeasureUnit,
   QuizAnswers,
+  RouletteProfile,
   SortMode,
   ThemeMode,
 } from '../types/cocktail';
@@ -15,6 +16,7 @@ import {
   fetchIngredientCatalog,
   fetchRandomRecipe,
   fetchRecipesByIngredients,
+  fetchRouletteBatch,
   searchRecipesByName,
 } from '../services/cocktailApi';
 import { storage } from '../services/storage';
@@ -52,9 +54,13 @@ class AppStore {
       selectedRecipe: null,
       favorites: storage.loadFavorites(),
       tastingNotes: storage.loadTastingNotes(),
-      rouletteRecipe: null,
+      rouletteProfile: storage.loadRouletteProfile(),
+      rouletteShowQuiz: true,
+      rouletteDeck: [],
+      rouletteSeenIds: [],
+      rouletteLiked: [],
+      rouletteHistory: [],
       rouletteLoading: false,
-      rouletteMood: 'any',
       quizStep: 1,
       quizAnswers: { mood: null, base: null, complexity: null },
       quizResults: [],
@@ -158,10 +164,11 @@ class AppStore {
   }
 
   setActiveTab(activeTab: ActiveTab): void {
-    this.setState({ activeTab });
-    if (activeTab === 'roulette' && !this.state.rouletteRecipe && !this.state.rouletteLoading) {
-      void this.spinRoulette();
+    if (activeTab === 'roulette' && this.state.rouletteDeck.length === 0) {
+      this.setState({ activeTab, rouletteShowQuiz: true });
+      return;
     }
+    this.setState({ activeTab });
   }
 
   addBarIngredient(raw: string): boolean {
@@ -354,38 +361,145 @@ class AppStore {
     this.setState({ tastingNotes: next });
   }
 
-  setRouletteMood(rouletteMood: AppState['rouletteMood']): void {
-    this.setState({ rouletteMood });
-    void this.spinRoulette();
+  submitRouletteProfile(profile: RouletteProfile): void {
+    storage.saveRouletteProfile(profile);
+    const { language } = this.state;
+
+    // Seed immediate curated matches scored by palate & age so deck opens with zero wait
+    const curated = getCuratedRecipes(language).filter((r) =>
+      profile.age < 18 ? !r.alcoholic : true
+    );
+
+    const scoredCurated = curated
+      .map((recipe) => {
+        const p = getFlavorProfile(recipe);
+        let score = Math.random() * 18;
+        if (profile.palate === 'sweet') score += p.sweet * 0.9;
+        else if (profile.palate === 'citrus') score += p.citrus * 0.9;
+        else if (profile.palate === 'bitter') score += p.bitter * 0.65 + p.strength * 0.35;
+        else score += 50;
+
+        if (profile.age >= 35 && p.strength >= 65) score += 12;
+        if (profile.age >= 18 && profile.age <= 25 && p.sweet >= 50) score += 10;
+        return { recipe, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .map((s) => s.recipe);
+
+    const initialDeck = scoredCurated.slice(0, 6);
+    const seenIds = initialDeck.map((r) => r.id);
+
+    this.setState({
+      rouletteProfile: profile,
+      rouletteShowQuiz: false,
+      rouletteDeck: initialDeck,
+      rouletteSeenIds: seenIds,
+      rouletteHistory: [],
+      rouletteLoading: false,
+    });
+
+    // Silently pre-fetch live global API cocktails to keep the swipe stack rich & endless
+    void this.replenishRouletteDeck();
   }
 
-  async spinRoulette(): Promise<void> {
-    const { rouletteMood, language, rouletteRecipe } = this.state;
+  editRouletteProfile(): void {
+    this.setState({ rouletteShowQuiz: true });
+  }
+
+  swipeRoulette(direction: 'left' | 'right'): CocktailRecipe | null {
+    const { rouletteDeck, rouletteHistory, rouletteLiked, favorites } = this.state;
+    const current = rouletteDeck[0];
+    if (!current) return null;
+
+    const rest = rouletteDeck.slice(1);
+    const action: 'like' | 'pass' = direction === 'right' ? 'like' : 'pass';
+    const nextHistory = [...rouletteHistory.slice(-15), { recipe: current, action }];
+
+    let nextLiked = rouletteLiked;
+    let nextFavorites = favorites;
+
+    if (direction === 'right') {
+      if (!rouletteLiked.some((r) => r.id === current.id)) {
+        nextLiked = [current, ...rouletteLiked];
+      }
+      if (!favorites[current.id]) {
+        nextFavorites = { ...favorites, [current.id]: current };
+        storage.saveFavorites(nextFavorites);
+      }
+    }
+
+    this.setState({
+      rouletteDeck: rest,
+      rouletteHistory: nextHistory,
+      rouletteLiked: nextLiked,
+      favorites: nextFavorites,
+    });
+
+    if (rest.length <= 3) {
+      void this.replenishRouletteDeck();
+    }
+
+    return current;
+  }
+
+  undoRouletteSwipe(): CocktailRecipe | null {
+    const { rouletteHistory, rouletteDeck } = this.state;
+    if (rouletteHistory.length === 0) return null;
+    const last = rouletteHistory[rouletteHistory.length - 1];
+    if (!last) return null;
+
+    this.setState({
+      rouletteHistory: rouletteHistory.slice(0, -1),
+      rouletteDeck: [last.recipe, ...rouletteDeck],
+    });
+    return last.recipe;
+  }
+
+  async replenishRouletteDeck(): Promise<void> {
+    const { rouletteProfile, language, rouletteSeenIds, rouletteLoading } = this.state;
+    if (!rouletteProfile || rouletteLoading) return;
+
     this.setState({ rouletteLoading: true });
+    const exclude = new Set(rouletteSeenIds);
 
     try {
-      const apiPick = await fetchRandomRecipe(rouletteMood, language);
-      if (apiPick) {
-        this.setState({ rouletteRecipe: apiPick, rouletteLoading: false });
+      const batch = await fetchRouletteBatch(rouletteProfile, language, exclude, 6);
+      const fresh = batch.filter((r) => !exclude.has(r.id));
+
+      if (fresh.length > 0) {
+        const currentDeck = this.state.rouletteDeck;
+        const currentSeen = this.state.rouletteSeenIds;
+        this.setState({
+          rouletteDeck: [...currentDeck, ...fresh],
+          rouletteSeenIds: [...currentSeen, ...fresh.map((r) => r.id)],
+          rouletteLoading: false,
+        });
         return;
       }
     } catch {
-      // Fallback to curated list below
+      // Fallback to reshuffling curated recipes below
     }
 
-    // Curated fallback so Roulette ALWAYS delivers a great drink even offline
-    const curated = getCuratedRecipes(language).filter((r) => {
-      if (rouletteMood === 'zero-proof') return !r.alcoholic;
-      if (rouletteMood === 'classic') return r.alcoholic && (r.profile?.strength ?? 50) >= 65;
-      if (rouletteMood === 'refreshing') return (r.profile?.citrus ?? 50) >= 60;
-      return true;
-    });
-    const pool = curated.filter((r) => r.id !== rouletteRecipe?.id);
-    const chosen = (pool.length > 0 ? pool : curated)[
-      Math.floor(Math.random() * Math.max(1, pool.length || curated.length))
-    ] ?? null;
+    // Curated fallback if API fails or user swiped through everything
+    const curated = getCuratedRecipes(language).filter((r) =>
+      rouletteProfile.age < 18 ? !r.alcoholic : true
+    );
+    const unseenCurated = curated.filter((r) => !exclude.has(r.id));
+    const fallbackPool = (unseenCurated.length > 0 ? unseenCurated : curated)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 5);
 
-    this.setState({ rouletteRecipe: chosen, rouletteLoading: false });
+    const existingIds = new Set(this.state.rouletteDeck.map((r) => r.id));
+    const additions = fallbackPool.filter((r) => !existingIds.has(r.id));
+
+    this.setState({
+      rouletteDeck: [...this.state.rouletteDeck, ...additions],
+      rouletteSeenIds:
+        unseenCurated.length > 0
+          ? [...this.state.rouletteSeenIds, ...additions.map((r) => r.id)]
+          : additions.map((r) => r.id),
+      rouletteLoading: false,
+    });
   }
 
   setQuizAnswer<K extends keyof QuizAnswers>(field: K, value: QuizAnswers[K]): void {

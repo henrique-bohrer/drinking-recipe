@@ -3,8 +3,9 @@ import type { CocktailRecipe } from '../types/cocktail';
 import { el, icon } from '../utils/dom';
 
 /**
- * Renders a tasteful cocktail image container with lazy loading and an editorial
- * botanical monogram fallback if an image is missing or fails to load.
+ * Renders a tasteful cocktail image container with lazy loading, subtle editorial
+ * edge scrim so bright API photos harmonize with both Paper and Speakeasy themes,
+ * and a botanical monogram fallback if an image is missing or fails to load.
  */
 export function createRecipeArt(recipe: CocktailRecipe, heightClass = 'h-44'): HTMLElement {
   const wrapper = el('div', {
@@ -19,7 +20,7 @@ export function createRecipeArt(recipe: CocktailRecipe, heightClass = 'h-44'): H
         children: [
           el('div', {
             className:
-              'w-12 h-12 rounded-full border border-[var(--border-strong)] bg-[var(--bg-surface)] flex items-center justify-center text-[var(--accent-primary)]',
+              'w-12 h-12 rounded-full glass-panel flex items-center justify-center text-[var(--accent-primary)]',
             children: [icon(Wine, 'w-5 h-5')],
           }),
           el('span', {
@@ -42,9 +43,15 @@ export function createRecipeArt(recipe: CocktailRecipe, heightClass = 'h-44'): H
   img.loading = 'lazy';
   img.decoding = 'async';
   img.className =
-    'w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]';
+    'w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]';
   img.addEventListener('error', buildFallback, { once: true });
 
-  wrapper.appendChild(img);
+  // Delicate top/bottom edge vignette so glass badges stay legible and bright photos blend softly
+  const edgeScrim = el('div', {
+    className:
+      'pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/22',
+  });
+
+  wrapper.append(img, edgeScrim);
   return wrapper;
 }

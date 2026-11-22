@@ -1,4 +1,4 @@
-import type { CocktailIngredient, CocktailRecipe, Language } from '../types/cocktail';
+import type { CocktailIngredient, CocktailRecipe, Language, RouletteProfile } from '../types/cocktail';
 import { toApiIngredientQuery, localizeIngredientName } from '../i18n/ingredientsMap';
 import { storage } from './storage';
 
@@ -230,6 +230,79 @@ export async function searchRecipesByName(
     detailCache.set(raw.idDrink, raw);
   }
   return list.map((raw) => mapRawDrinkToRecipe(raw, lang));
+}
+
+/**
+ * Fetches a batch of tailored cocktails for the Tinder-style Roulette deck
+ * based on user palate and age (< 18 automatically locks to Zero-Proof mocktails).
+ */
+export async function fetchRouletteBatch(
+  profile: RouletteProfile,
+  lang: Language,
+  excludeIds: Set<string>,
+  count = 6
+): Promise<CocktailRecipe[]> {
+  const isUnderage = profile.age < 18;
+
+  if (isUnderage) {
+    const data = await fetchJsonSafe<{ drinks: ApiDrinkSummary[] | null }>(
+      `${API_BASE}/filter.php?a=Non_Alcoholic`
+    );
+    const pool = (data?.drinks ?? []).filter((d) => !excludeIds.has(`api-${d.idDrink}`));
+    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+    const details = await Promise.all(
+      shuffled.map((item) => fetchDrinkById(item.idDrink, lang).catch(() => null))
+    );
+    return details.filter((r): r is CocktailRecipe => r !== null && !r.alcoholic);
+  }
+
+  const seedMap: Record<RouletteProfile['palate'], string[]> = {
+    sweet: ['Pineapple Juice', 'Grenadine', 'Coconut Milk', 'Peach Schnapps', 'Amaretto', 'Strawberry'],
+    citrus: ['Lime', 'Lemon', 'Mint', 'Gin', 'Tequila', 'Ginger Beer'],
+    bitter: ['Campari', 'Bourbon', 'Sweet Vermouth', 'Whiskey', 'Espresso', 'Dry Vermouth'],
+    balanced: ['Gin', 'Vodka', 'White Rum', 'Bourbon', 'Tequila', 'Aperol'],
+  };
+
+  const seeds = seedMap[profile.palate];
+  const chosenSeeds = [...seeds].sort(() => Math.random() - 0.5).slice(0, 2);
+
+  const summaryGroups = await Promise.all(
+    chosenSeeds.map(async (seed) => {
+      const key = seed.toLowerCase();
+      if (ingredientFilterCache.has(key)) {
+        return ingredientFilterCache.get(key) ?? [];
+      }
+      try {
+        const data = await fetchJsonSafe<{ drinks: ApiDrinkSummary[] | null }>(
+          `${API_BASE}/filter.php?i=${encodeURIComponent(seed)}`
+        );
+        const list = Array.isArray(data?.drinks) ? data.drinks : [];
+        ingredientFilterCache.set(key, list);
+        return list;
+      } catch {
+        return [];
+      }
+    })
+  );
+
+  const uniqueCandidates = new Map<string, ApiDrinkSummary>();
+  for (const list of summaryGroups) {
+    for (const item of list) {
+      if (item?.idDrink && !excludeIds.has(`api-${item.idDrink}`)) {
+        uniqueCandidates.set(item.idDrink, item);
+      }
+    }
+  }
+
+  const picked = Array.from(uniqueCandidates.values())
+    .sort(() => Math.random() - 0.5)
+    .slice(0, count);
+
+  const details = await Promise.all(
+    picked.map((item) => fetchDrinkById(item.idDrink, lang).catch(() => null))
+  );
+
+  return details.filter((r): r is CocktailRecipe => r !== null);
 }
 
 /**

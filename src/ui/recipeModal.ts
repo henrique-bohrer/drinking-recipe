@@ -27,6 +27,7 @@ import { showToast } from './toast';
 
 interface ModalLocalState {
   recipeId: string | null;
+  hasAnimatedOpen: boolean;
   servings: number;
   checkedSteps: Set<number>;
   timerDuration: number;
@@ -36,10 +37,13 @@ interface ModalLocalState {
   translatedSteps: string[] | null;
   showingTranslation: boolean;
   translating: boolean;
+  draftRating: number | null;
+  draftNote: string | null;
 }
 
 const local: ModalLocalState = {
   recipeId: null,
+  hasAnimatedOpen: false,
   servings: 1,
   checkedSteps: new Set(),
   timerDuration: 15,
@@ -49,6 +53,8 @@ const local: ModalLocalState = {
   translatedSteps: null,
   showingTranslation: false,
   translating: false,
+  draftRating: null,
+  draftNote: null,
 };
 
 let timerInterval: number | null = null;
@@ -66,6 +72,7 @@ function resetLocalForRecipe(recipe: MatchedRecipe): void {
   if (local.recipeId === recipe.id) return;
   stopTimer();
   local.recipeId = recipe.id;
+  local.hasAnimatedOpen = false;
   local.servings = 1;
   local.checkedSteps = new Set();
   local.timerDuration = recipe.prepSeconds ?? 15;
@@ -75,6 +82,8 @@ function resetLocalForRecipe(recipe: MatchedRecipe): void {
   local.translatedSteps = null;
   local.showingTranslation = false;
   local.translating = false;
+  local.draftRating = null;
+  local.draftNote = null;
 }
 
 export function renderRecipeModal(
@@ -113,10 +122,24 @@ export function renderRecipeModal(
   const activeSteps =
     local.showingTranslation && local.translatedSteps ? local.translatedSteps : recipe.instructions;
 
-  // Backdrop
+  const shouldAnimateOpen = !local.hasAnimatedOpen;
+  local.hasAnimatedOpen = true;
+
+  // Capture current modal scroll & textarea focus before re-rendering so clicking steps/timer never jumps to top
+  const prevScrollEl = container.querySelector<HTMLElement>('[data-modal-scroll="true"]');
+  const prevScrollTop = !shouldAnimateOpen && prevScrollEl ? prevScrollEl.scrollTop : 0;
+  const activeNoteEl =
+    document.activeElement?.id === 'modal-tasting-note'
+      ? (document.activeElement as HTMLTextAreaElement)
+      : null;
+  const noteSelStart = activeNoteEl?.selectionStart ?? null;
+  const noteSelEnd = activeNoteEl?.selectionEnd ?? null;
+
+  // Backdrop (frosted dim)
   const backdrop = el('div', {
-    className:
-      'fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 sm:p-6 overflow-hidden',
+    className: `fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-[4px] sm:p-6 overflow-hidden ${
+      shouldAnimateOpen ? 'animate-modal-backdrop' : ''
+    }`,
     attrs: { role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'modal-recipe-title' },
     onClick: (ev) => {
       if (ev.target === backdrop) {
@@ -127,21 +150,22 @@ export function renderRecipeModal(
 
   // Sheet / Modal card
   const dialog = el('div', {
-    className:
-      'animate-fade-up w-full sm:max-w-3xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col rounded-t-3xl sm:rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-2xl overflow-hidden',
+    className: `${
+      shouldAnimateOpen ? 'animate-modal-sheet' : ''
+    } w-full sm:max-w-3xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col rounded-t-3xl sm:rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-2xl overflow-hidden`,
   });
 
-  // Top Header Bar (sticky)
+  // Top Header Bar (sticky frosted glass)
   const topBar = el('div', {
     className:
-      'flex items-center justify-between gap-3 px-5 py-3.5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] shrink-0',
+      'flex items-center justify-between gap-3 px-5 py-3.5 border-b glass-nav shrink-0',
     children: [
       el('div', {
         className: 'flex items-center gap-2 min-w-0',
         children: [
           el('span', {
             className:
-              'text-[11px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full bg-[var(--bg-muted)] text-[var(--ink-secondary)] shrink-0',
+              'pill-glass-chip text-[11px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full text-[var(--ink-secondary)] shrink-0',
             text: recipe.source === 'curated' ? t(language, 'curatedBadge') : t(language, 'apiBadge'),
           }),
           !recipe.alcoholic &&
@@ -157,10 +181,8 @@ export function renderRecipeModal(
         children: [
           // Bookmark
           el('button', {
-            className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
-              isFav
-                ? 'bg-[var(--accent-warm)] border-[var(--accent-warm)] text-[var(--ink-on-accent)]'
-                : 'border-[var(--border-subtle)] text-[var(--ink-secondary)] hover:text-[var(--accent-warm)] hover:border-[var(--accent-warm)]'
+            className: `btn-glass px-3 py-1.5 rounded-full text-xs font-semibold ${
+              isFav ? 'btn-glass-warm' : ''
             }`,
             attrs: { type: 'button' },
             onClick: () => {
@@ -180,8 +202,7 @@ export function renderRecipeModal(
           }),
           // Share
           el('button', {
-            className:
-              'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[var(--border-subtle)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] hover:border-[var(--border-strong)] transition-colors cursor-pointer',
+            className: 'btn-glass px-3 py-1.5 rounded-full text-xs font-semibold',
             attrs: { type: 'button', 'aria-label': t(language, 'shareRecipe') },
             onClick: () => void handleShare(recipe, language, unit),
             children: [
@@ -191,11 +212,10 @@ export function renderRecipeModal(
           }),
           // Close
           el('button', {
-            className:
-              'w-8 h-8 rounded-full inline-flex items-center justify-center text-[var(--ink-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--ink-primary)] transition-colors cursor-pointer',
+            className: 'btn-glass w-8 h-8 !p-0 rounded-full text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]',
             attrs: { type: 'button', 'aria-label': t(language, 'closeModal') },
             onClick: () => store.closeRecipe(),
-            children: [icon(X, 'w-5 h-5')],
+            children: [icon(X, 'w-4 h-4')],
           }),
         ],
       }),
@@ -204,7 +224,10 @@ export function renderRecipeModal(
   dialog.appendChild(topBar);
 
   // Scrollable content body
-  const scrollBody = el('div', { className: 'overflow-y-auto flex-1' });
+  const scrollBody = el('div', {
+    className: 'overflow-y-auto flex-1',
+    attrs: { 'data-modal-scroll': 'true' },
+  });
 
   // Hero split (image + headline metadata)
   const heroSplit = el('div', {
@@ -337,16 +360,16 @@ export function renderRecipeModal(
           // Metric / Imperial unit switch
           el('div', {
             className:
-              'inline-flex rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-canvas)] p-0.5 text-xs font-mono',
+              'btn-group-dynamic rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-canvas)] p-1 text-xs font-mono',
             children: (['metric', 'imperial'] as const).map((u) => {
               const active = unit === u;
               return el('button', {
-                className: `px-2.5 py-1 rounded-md cursor-pointer transition-colors ${
+                className: `px-2.5 py-1 rounded-md cursor-pointer ${
                   active
                     ? 'bg-[var(--accent-primary)] text-[var(--ink-on-accent)] font-semibold'
                     : 'text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]'
                 }`,
-                attrs: { type: 'button' },
+                attrs: { type: 'button', 'aria-pressed': String(active) },
                 onClick: () => store.setUnit(u),
                 text: u === 'metric' ? t(language, 'unitMetric') : t(language, 'unitImperial'),
               });
@@ -416,8 +439,7 @@ export function renderRecipeModal(
           }),
           missing.length > 0 &&
             el('button', {
-              className:
-                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border-subtle)] text-[var(--ink-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer font-medium',
+              className: 'btn-glass px-3 py-1.5 rounded-lg text-xs font-medium',
               attrs: { type: 'button' },
               onClick: async () => {
                 const text = `${recipe.name} — ${missing.join(', ')}`;
@@ -458,8 +480,7 @@ export function renderRecipeModal(
       }),
       canTranslate &&
         el('button', {
-          className:
-            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border-strong)] bg-[var(--bg-canvas)] text-[var(--accent-primary)] hover:bg-[var(--accent-primary-soft)] transition-colors cursor-pointer disabled:opacity-50',
+          className: 'btn-glass px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--accent-primary)]',
           attrs: { type: 'button', ...(local.translating ? { disabled: 'true' } : {}) },
           onClick: async () => {
             if (local.showingTranslation) {
@@ -513,10 +534,11 @@ export function renderRecipeModal(
   }
 
   const stepsList = el('ol', {
-    className: 'space-y-2',
+    className: 'menu-list-dynamic',
     children: activeSteps.map((step, idx) => {
       const done = local.checkedSteps.has(idx);
       return el('li', {
+        attrs: { 'aria-selected': String(done) },
         children: [
           el('button', {
             className: `w-full text-left flex items-start gap-3 p-3 rounded-xl border transition-colors cursor-pointer ${
@@ -585,7 +607,7 @@ export function renderRecipeModal(
         ],
       }),
       el('div', {
-        className: 'flex flex-wrap items-center gap-2',
+        className: 'btn-group-dynamic !flex flex-wrap items-center',
         children: [
           ...[
             { label: t(language, 'timerShake'), secs: 15 },
@@ -593,12 +615,12 @@ export function renderRecipeModal(
             { label: t(language, 'timerChill'), secs: 30 },
           ].map((preset) =>
             el('button', {
-              className: `px-2.5 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
+              className: `px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer active:scale-95 ${
                 local.timerDuration === preset.secs
-                  ? 'border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
-                  : 'border-[var(--border-subtle)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]'
+                  ? 'border border-[var(--accent-primary)] bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                  : 'pill-glass-chip text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]'
               }`,
-              attrs: { type: 'button' },
+              attrs: { type: 'button', 'aria-pressed': String(local.timerDuration === preset.secs) },
               onClick: () => {
                 stopTimer();
                 local.timerDuration = preset.secs;
@@ -610,8 +632,7 @@ export function renderRecipeModal(
             })
           ),
           el('button', {
-            className:
-              'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--accent-primary)] text-[var(--ink-on-accent)] hover:bg-[var(--accent-primary-hover)] transition-colors cursor-pointer',
+            className: 'btn-primary px-3.5 py-1.5 rounded-lg text-xs font-semibold',
             attrs: { type: 'button' },
             onClick: () => {
               if (local.timerRunning) {
@@ -642,8 +663,7 @@ export function renderRecipeModal(
             ],
           }),
           el('button', {
-            className:
-              'p-1.5 rounded-lg border border-[var(--border-subtle)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] cursor-pointer',
+            className: 'btn-glass w-8 h-8 !p-0 rounded-lg text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]',
             attrs: { type: 'button', 'aria-label': t(language, 'timerReset') },
             onClick: () => {
               stopTimer();
@@ -660,16 +680,20 @@ export function renderRecipeModal(
   contentArea.appendChild(timerBox);
 
   // 4) Personal Tasting Notes & Star Rating
-  let draftRating = noteRecord?.rating ?? 0;
+  let draftRating = local.draftRating ?? noteRecord?.rating ?? 0;
   const noteTextarea = el('textarea', {
     className:
       'w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-canvas)] px-3.5 py-2.5 text-sm text-[var(--ink-primary)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:border-[var(--accent-primary)] resize-y min-h-[76px]',
     attrs: {
+      id: 'modal-tasting-note',
       placeholder: t(language, 'notesPlaceholder'),
       rows: '2',
     },
   });
-  noteTextarea.value = noteRecord?.note ?? '';
+  noteTextarea.value = local.draftNote ?? noteRecord?.note ?? '';
+  noteTextarea.addEventListener('input', () => {
+    local.draftNote = noteTextarea.value;
+  });
 
   const starsRow = el('div', { className: 'flex items-center gap-1' });
   const paintStars = () => {
@@ -682,6 +706,7 @@ export function renderRecipeModal(
           attrs: { type: 'button', 'aria-label': `${starVal} / 5` },
           onClick: () => {
             draftRating = starVal === draftRating ? 0 : starVal;
+            local.draftRating = draftRating;
             paintStars();
           },
           children: [icon(Star, `w-5 h-5 ${starVal <= draftRating ? 'fill-current' : ''}`)],
@@ -709,10 +734,11 @@ export function renderRecipeModal(
         className: 'flex justify-end',
         children: [
           el('button', {
-            className:
-              'px-4 py-2 rounded-xl text-xs font-semibold border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--ink-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer',
+            className: 'btn-glass px-4 py-2 rounded-xl text-xs font-semibold',
             attrs: { type: 'button' },
             onClick: () => {
+              local.draftRating = draftRating;
+              local.draftNote = noteTextarea.value;
               store.saveTastingNote(recipe.id, draftRating, noteTextarea.value);
               if (!favorites[recipe.id]) {
                 store.toggleFavorite(recipe);
@@ -731,6 +757,23 @@ export function renderRecipeModal(
   dialog.appendChild(scrollBody);
   backdrop.appendChild(dialog);
   container.replaceChildren(backdrop);
+
+  // Synchronously restore exact scroll position within the same paint frame
+  if (prevScrollTop > 0) {
+    scrollBody.scrollTop = prevScrollTop;
+  }
+
+  // Restore focus & caret if user was typing in Tasting Notes while timer ticked
+  if (activeNoteEl) {
+    noteTextarea.focus({ preventScroll: true });
+    if (noteSelStart !== null && noteSelEnd !== null) {
+      try {
+        noteTextarea.setSelectionRange(noteSelStart, noteSelEnd);
+      } catch {
+        // Ignore
+      }
+    }
+  }
 }
 
 function renderFlavorBar(label: string, value: number, colorVar: string): HTMLElement {

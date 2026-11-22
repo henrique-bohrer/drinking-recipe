@@ -6,6 +6,19 @@ export interface TranslationDict {
   heroEyebrow: string;
   heroTitle: string;
   heroSubtitle: string;
+  menuEyebrow: string;
+  menuTitle: string;
+  menuSubtitle: string;
+  menuRecommendationTag: string;
+  menuPrevPage: string;
+  menuNextPage: string;
+  menuPageIndicator: string;
+  menuSwipeTip: string;
+  menuToPantryCta: string;
+  menuChapter1: string;
+  menuChapter2: string;
+  menuChapter3: string;
+  menuOpenHint: string;
   navExplore: string;
   navRoulette: string;
   navQuiz: string;
@@ -83,14 +96,40 @@ export interface TranslationDict {
   rouletteEyebrow: string;
   rouletteTitle: string;
   rouletteSubtitle: string;
-  rouletteSpinBtn: string;
-  rouletteSpinning: string;
-  rouletteMoodAny: string;
-  rouletteMoodRefreshing: string;
-  rouletteMoodClassic: string;
-  rouletteMoodZero: string;
+  rouletteQuizBadge: string;
+  rouletteQuizTitle: string;
+  rouletteQuizSubtitle: string;
+  rouletteGenderLabel: string;
+  rouletteGenderMale: string;
+  rouletteGenderFemale: string;
+  rouletteGenderOther: string;
+  roulettePalateLabel: string;
+  roulettePalateSweet: string;
+  roulettePalateSweetDesc: string;
+  roulettePalateCitrus: string;
+  roulettePalateCitrusDesc: string;
+  roulettePalateBitter: string;
+  roulettePalateBitterDesc: string;
+  roulettePalateBalanced: string;
+  roulettePalateBalancedDesc: string;
+  rouletteAgeLabel: string;
+  rouletteAgePlaceholder: string;
+  rouletteAgeInvalid: string;
+  rouletteStartBtn: string;
+  rouletteEditProfileBtn: string;
+  rouletteSwipeHint: string;
+  rouletteStampLike: string;
+  rouletteStampNope: string;
+  rouletteBtnNope: string;
+  rouletteBtnLike: string;
+  rouletteBtnUndo: string;
   rouletteViewDetails: string;
-  rouletteAddMissingToBar: string;
+  rouletteMatchToast: string;
+  rouletteUnderageBanner: string;
+  rouletteMatchesTitle: string;
+  rouletteLoadingDeck: string;
+  rouletteRefillBtn: string;
+  rouletteEmptyDeck: string;
   quizEyebrow: string;
   quizTitle: string;
   quizSubtitle: string;
@@ -137,7 +176,21 @@ export const translations: Record<Language, TranslationDict> = {
     heroTitle: 'O que tem no seu bar hoje?',
     heroSubtitle:
       'Combine os ingredientes que você já tem em casa, ajuste as doses com precisão e descubra receitas clássicas e autorais sem complicação.',
-    navExplore: 'Explorar',
+    menuEyebrow: 'Carta da Casa · Edição do Balcão',
+    menuTitle: 'Carta de Drinks da Casa',
+    menuSubtitle:
+      'Folheie as páginas do nosso cardápio e toque em qualquer drink para abrir o preparo completo, medidas e cronômetro.',
+    menuRecommendationTag: 'Recomendação da Casa',
+    menuPrevPage: 'Anterior',
+    menuNextPage: 'Próxima',
+    menuPageIndicator: 'Página {current} de {total}',
+    menuSwipeTip: 'Clique nos botões, nos capítulos ou arraste a folha para virar a página',
+    menuToPantryCta: 'Usar o que tenho no bar',
+    menuChapter1: 'I · Clássicos de Balcão',
+    menuChapter2: 'II · Frescor & Modernos',
+    menuChapter3: 'III · Brasilidades & Zero',
+    menuOpenHint: 'Ver preparo',
+    navExplore: 'Carta & Bar',
     navRoulette: 'Roleta',
     navQuiz: 'Paladar',
     navFavorites: 'Caderno',
@@ -211,17 +264,45 @@ export const translations: Record<Language, TranslationDict> = {
     notesSavedToast: 'Avaliação salva no seu caderno.',
     stepProgress: '{done} de {total} etapas concluídas',
     closeModal: 'Fechar',
-    rouletteEyebrow: 'Descoberta Espontânea',
+    rouletteEyebrow: 'Match de Drinks',
     rouletteTitle: 'Roleta do Bartender',
-    rouletteSubtitle: 'Sem ideia do que preparar? Escolha o clima da noite e deixe a casa sortear um coquetel real.',
-    rouletteSpinBtn: 'Sortear Novo Drink',
-    rouletteSpinning: 'Preparando sugestão...',
-    rouletteMoodAny: 'Surpresa total',
-    rouletteMoodRefreshing: 'Refrescante',
-    rouletteMoodClassic: 'Forte & Clássico',
-    rouletteMoodZero: 'Sem Álcool',
-    rouletteViewDetails: 'Abrir modo bartender',
-    rouletteAddMissingToBar: 'Explorar parecidos',
+    rouletteSubtitle:
+      'Arraste para a direita se deu vontade de provar, ou para a esquerda para passar para a próxima sugestão.',
+    rouletteQuizBadge: 'Check-in no Balcão',
+    rouletteQuizTitle: 'Antes de girar a roleta, conta pra gente!',
+    rouletteQuizSubtitle:
+      'Responda rapidinho para o bartender calibrar a pilha de drinks do jeitinho que combina com você.',
+    rouletteGenderLabel: 'Quem está no balcão hoje?',
+    rouletteGenderMale: 'Homem',
+    rouletteGenderFemale: 'Mulher',
+    rouletteGenderOther: 'Tanto faz',
+    roulettePalateLabel: 'Qual é o seu paladar favorito?',
+    roulettePalateSweet: 'Doce & Frutado',
+    roulettePalateSweetDesc: 'Cremoso, tropical ou com toque adocicado.',
+    roulettePalateCitrus: 'Cítrico & Refrescante',
+    roulettePalateCitrusDesc: 'Limão, hortelã, leve e super refrescante.',
+    roulettePalateBitter: 'Amargo & Clássico',
+    roulettePalateBitterDesc: 'Seco, marcante e cheio de personalidade.',
+    roulettePalateBalanced: 'Equilibrado / Topa tudo',
+    roulettePalateBalancedDesc: 'Pode mandar de tudo que eu encaro.',
+    rouletteAgeLabel: 'Qual a sua idade?',
+    rouletteAgePlaceholder: 'Ex: 24',
+    rouletteAgeInvalid: 'Informe uma idade válida entre 10 e 110 anos.',
+    rouletteStartBtn: 'Liberar meus drinks',
+    rouletteEditProfileBtn: 'Refazer perfil',
+    rouletteSwipeHint: '← Arraste para passar · Arraste para curtir →',
+    rouletteStampLike: 'CURTI!',
+    rouletteStampNope: 'PASSO',
+    rouletteBtnNope: 'Passo',
+    rouletteBtnLike: 'Curti',
+    rouletteBtnUndo: 'Voltar',
+    rouletteViewDetails: 'Ver receita',
+    rouletteMatchToast: 'Deu match! {name} salvo no seu Caderno.',
+    rouletteUnderageBanner: 'Modo Zero Álcool ativado (menores de 18) — só mocktails de respeito!',
+    rouletteMatchesTitle: 'Seus Matches desta rodada',
+    rouletteLoadingDeck: 'O bartender está separando mais drinks...',
+    rouletteRefillBtn: 'Buscar mais sugestões',
+    rouletteEmptyDeck: 'Você já passou por toda a rodada! Quer puxar mais sugestões da casa?',
     quizEyebrow: 'Sommelier Interativo',
     quizTitle: 'Qual drink combina com o momento?',
     quizSubtitle: 'Responda 3 perguntas rápidas para uma recomendação sob medida ao seu paladar.',
@@ -266,7 +347,21 @@ export const translations: Record<Language, TranslationDict> = {
     heroTitle: 'What is in your bar today?',
     heroSubtitle:
       'Match ingredients you already have at home, scale exact measurements, and discover classic or global recipes without clutter.',
-    navExplore: 'Explore',
+    menuEyebrow: 'House Menu · Bar Edition',
+    menuTitle: 'House Cocktail Menu',
+    menuSubtitle:
+      'Flip through the pages of our craft menu and tap any drink to open its full recipe, scaled measures, and timer.',
+    menuRecommendationTag: 'House Pick',
+    menuPrevPage: 'Previous',
+    menuNextPage: 'Next',
+    menuPageIndicator: 'Page {current} of {total}',
+    menuSwipeTip: 'Click the controls, chapters, or swipe horizontally to turn the page',
+    menuToPantryCta: 'Match my home bar',
+    menuChapter1: 'I · Bar Classics',
+    menuChapter2: 'II · Crisp & Modern',
+    menuChapter3: 'III · Brazilian & Zero',
+    menuOpenHint: 'Full recipe',
+    navExplore: 'Menu & Bar',
     navRoulette: 'Roulette',
     navQuiz: 'Palate',
     navFavorites: 'Notebook',
@@ -340,17 +435,45 @@ export const translations: Record<Language, TranslationDict> = {
     notesSavedToast: 'Tasting note saved to your notebook.',
     stepProgress: '{done} of {total} steps checked',
     closeModal: 'Close',
-    rouletteEyebrow: 'Spontaneous Discovery',
+    rouletteEyebrow: 'Cocktail Match',
     rouletteTitle: 'Bartender Roulette',
-    rouletteSubtitle: 'Undecided tonight? Pick a mood and let the house pour a real cocktail suggestion.',
-    rouletteSpinBtn: 'Spin New Drink',
-    rouletteSpinning: 'Shaking up a pick...',
-    rouletteMoodAny: 'Total surprise',
-    rouletteMoodRefreshing: 'Refreshing',
-    rouletteMoodClassic: 'Bold & Classic',
-    rouletteMoodZero: 'Zero-Proof',
-    rouletteViewDetails: 'Open bartender mode',
-    rouletteAddMissingToBar: 'Explore similar',
+    rouletteSubtitle:
+      'Swipe right if it catches your eye, or swipe left to pass and see the next tailored suggestion.',
+    rouletteQuizBadge: 'Bar Check-In',
+    rouletteQuizTitle: 'Before we pour, tell us about you!',
+    rouletteQuizSubtitle:
+      'Answer three quick questions so the bartender can stack a deck tailored to your vibe.',
+    rouletteGenderLabel: 'Who is sitting at the bar tonight?',
+    rouletteGenderMale: 'Man',
+    rouletteGenderFemale: 'Woman',
+    rouletteGenderOther: 'Either / Skip',
+    roulettePalateLabel: 'What is your favorite palate?',
+    roulettePalateSweet: 'Sweet & Fruity',
+    roulettePalateSweetDesc: 'Lush, tropical, smooth, or lightly sweet.',
+    roulettePalateCitrus: 'Citrus & Refreshing',
+    roulettePalateCitrusDesc: 'Bright lime, mint, crisp and lively.',
+    roulettePalateBitter: 'Bitter & Classic',
+    roulettePalateBitterDesc: 'Dry, spirit-forward, bold character.',
+    roulettePalateBalanced: 'Balanced / Surprise me',
+    roulettePalateBalancedDesc: 'Bring a mix of everything.',
+    rouletteAgeLabel: 'How old are you?',
+    rouletteAgePlaceholder: 'E.g. 24',
+    rouletteAgeInvalid: 'Please enter a valid age between 10 and 110.',
+    rouletteStartBtn: 'Deal my drinks',
+    rouletteEditProfileBtn: 'Edit profile',
+    rouletteSwipeHint: '← Swipe left to pass · Swipe right to like →',
+    rouletteStampLike: 'LIKED!',
+    rouletteStampNope: 'NOPE',
+    rouletteBtnNope: 'Pass',
+    rouletteBtnLike: 'Like',
+    rouletteBtnUndo: 'Undo',
+    rouletteViewDetails: 'View recipe',
+    rouletteMatchToast: "It's a match! {name} saved to your Notebook.",
+    rouletteUnderageBanner: 'Zero-Proof mode active (under 18) — top-shelf mocktails only!',
+    rouletteMatchesTitle: 'Your Matches this round',
+    rouletteLoadingDeck: 'The bartender is pulling more drinks...',
+    rouletteRefillBtn: 'Deal more drinks',
+    rouletteEmptyDeck: 'You went through the whole stack! Want a fresh round?',
     quizEyebrow: 'Interactive Sommelier',
     quizTitle: 'Which drink fits this moment?',
     quizSubtitle: 'Answer 3 quick questions for a tailored cocktail recommendation.',

@@ -35,7 +35,7 @@ export function renderBarPantry(state: AppState): HTMLElement {
       barIngredients.length > 0 &&
         el('button', {
           className:
-            'inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border border-[var(--border-subtle)] text-[var(--ink-secondary)] hover:text-[var(--accent-warm)] hover:border-[var(--accent-warm)] transition-colors cursor-pointer',
+            'btn-glass text-xs font-medium px-3.5 py-1.5 rounded-full text-[var(--ink-secondary)] hover:text-[var(--accent-warm)]',
           attrs: { type: 'button' },
           onClick: () => store.clearBarIngredients(),
           children: [icon(Trash2, 'w-3.5 h-3.5'), el('span', { text: t(language, 'pantryClearBtn') })],
@@ -67,8 +67,7 @@ export function renderBarPantry(state: AppState): HTMLElement {
   });
 
   const addButton = el('button', {
-    className:
-      'shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--accent-primary)] text-[var(--ink-on-accent)] hover:bg-[var(--accent-primary-hover)] transition-colors cursor-pointer',
+    className: 'btn-primary shrink-0 px-4 py-2 rounded-lg text-sm font-semibold min-h-[40px]',
     attrs: { type: 'button' },
     onClick: () => commitInput(),
     children: [icon(Plus, 'w-4 h-4'), el('span', { className: 'hidden sm:inline', text: t(language, 'pantryAddBtn') })],
@@ -78,7 +77,7 @@ export function renderBarPantry(state: AppState): HTMLElement {
 
   const dropdown = el('ul', {
     className:
-      'hidden absolute left-0 right-0 top-[calc(100%+6px)] z-30 max-h-56 overflow-y-auto rounded-xl border border-[var(--border-strong)] bg-[var(--bg-surface)] shadow-xl py-1',
+      'hidden absolute left-0 right-0 top-[calc(100%+8px)] z-30 max-h-60 overflow-y-auto rounded-2xl glass-popover p-2 menu-list-dynamic animate-fade-up',
     attrs: { id: 'pantry-suggestions-list', role: 'listbox' },
   });
 
@@ -138,9 +137,9 @@ export function renderBarPantry(state: AppState): HTMLElement {
     dropdown.replaceChildren(
       ...filteredSuggestions.map((item, idx) => {
         const li = el('li', {
-          className: `px-3.5 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors ${
+          className: `px-3.5 py-2.5 rounded-xl text-sm cursor-pointer flex items-center justify-between ${
             idx === highlightedIndex
-              ? 'bg-[var(--accent-primary-soft)] text-[var(--ink-primary)] font-medium'
+              ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] font-semibold'
               : 'text-[var(--ink-primary)] hover:bg-[var(--bg-muted)]'
           }`,
           attrs: { role: 'option', 'aria-selected': String(idx === highlightedIndex) },
@@ -203,12 +202,12 @@ export function renderBarPantry(state: AppState): HTMLElement {
       children: barIngredients.map((item) =>
         el('span', {
           className:
-            'animate-fade-up inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full text-sm font-medium bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] border border-[var(--accent-primary)]/25',
+            'animate-pop inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-sm font-medium bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 shadow-[inset_0_1px_0_var(--glass-highlight)]',
           children: [
             el('span', { text: item }),
             el('button', {
               className:
-                'w-5 h-5 rounded-full inline-flex items-center justify-center hover:bg-[var(--accent-primary)] hover:text-[var(--ink-on-accent)] transition-colors cursor-pointer',
+                'w-5 h-5 rounded-full inline-flex items-center justify-center hover:bg-[var(--accent-primary)] hover:text-[var(--ink-on-accent)] transition-all duration-200 active:scale-90 cursor-pointer',
               attrs: { type: 'button', 'aria-label': `Remove ${item}` },
               onClick: () => store.removeBarIngredient(item),
               children: [icon(X, 'w-3 h-3')],
@@ -244,7 +243,7 @@ export function renderBarPantry(state: AppState): HTMLElement {
         ...staples.slice(0, 9).map((staple) =>
           el('button', {
             className:
-              'shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--bg-muted)] text-[var(--ink-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--ink-primary)] border border-transparent hover:border-[var(--border-strong)] transition-colors cursor-pointer',
+              'pill-glass-chip shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] cursor-pointer',
             attrs: { type: 'button' },
             onClick: () => store.addBarIngredient(staple),
             children: [icon(Plus, 'w-3 h-3 text-[var(--accent-primary)]'), el('span', { text: staple })],
@@ -261,7 +260,7 @@ export function renderBarPantry(state: AppState): HTMLElement {
     if (topUnlock) {
       const tipBar = el('div', {
         className:
-          'mt-4 rounded-xl px-3.5 py-2.5 bg-[var(--accent-amber-soft)] border border-[var(--accent-amber)]/30 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm',
+          'mt-4 rounded-xl px-3.5 py-2.5 bg-[var(--accent-amber-soft)] border border-[var(--accent-amber)]/30 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm animate-fade-up',
         children: [
           el('div', {
             className: 'flex items-center gap-2 text-[var(--ink-primary)]',
@@ -276,8 +275,7 @@ export function renderBarPantry(state: AppState): HTMLElement {
             ],
           }),
           el('button', {
-            className:
-              'text-xs font-semibold px-2.5 py-1 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-strong)] text-[var(--ink-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer',
+            className: 'btn-glass text-xs font-semibold px-3 py-1.5 rounded-lg',
             attrs: { type: 'button' },
             onClick: () => store.addBarIngredient(topUnlock.ingredient),
             text: `+ ${t(language, 'pantryAddSuggestion')}`,
