@@ -1,0 +1,16 @@
+{
+  "name": "NeoDrinks — Atelier de Mixologia",
+  "short_name": "NeoDrinks",
+  "description": "Descubra coquetéis com os ingredientes do seu bar, gire a roleta do bartender e salve suas receitas favoritas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F6F2EA",
+  "theme_color": "#2D5A45",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
