@@ -68,7 +68,7 @@ export function renderHeader(state: AppState): HTMLElement {
         className: active
           ? 'btn-primary px-4 py-1.5 rounded-full text-sm font-semibold'
           : 'inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] hover:bg-[var(--bg-muted)]/70 cursor-pointer active:scale-[0.97]',
-        attrs: { type: 'button', 'aria-current': active ? 'page' : 'false' },
+        attrs: { type: 'button', ...(active ? { 'aria-current': 'page' } : {}) },
         onClick: () => store.setActiveTab(item.id),
         children: [
           icon(item.iconNode, 'w-4 h-4'),
@@ -185,7 +185,7 @@ export function renderMobileBottomNav(state: AppState): HTMLElement {
             className: `relative flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl text-[11px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 ${
               active ? 'text-[var(--accent-primary)]' : 'text-[var(--ink-muted)]'
             }`,
-            attrs: { type: 'button', 'aria-current': active ? 'page' : 'false' },
+            attrs: { type: 'button', ...(active ? { 'aria-current': 'page' } : {}) },
             onClick: () => {
               store.setActiveTab(item.id);
               window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -141,7 +141,20 @@ function bootstrap(): void {
         mainSlot.replaceChildren(renderRouletteView(state));
       }
     } else if (state.activeTab === 'quiz') {
-      mainSlot.replaceChildren(renderQuizView(state));
+      const quizChanged =
+        !prev ||
+        prev.activeTab !== 'quiz' ||
+        prev.language !== state.language ||
+        prev.quizStep !== state.quizStep ||
+        prev.quizLoading !== state.quizLoading ||
+        prev.quizResults !== state.quizResults ||
+        prev.quizAnswers !== state.quizAnswers ||
+        prev.barIngredients !== state.barIngredients ||
+        prev.favorites !== state.favorites;
+
+      if (quizChanged) {
+        mainSlot.replaceChildren(renderQuizView(state));
+      }
     } else if (state.activeTab === 'favorites') {
       mainSlot.replaceChildren(renderFavoritesView(state));
     }

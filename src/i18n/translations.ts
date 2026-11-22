@@ -150,10 +150,30 @@ export interface TranslationDict {
   quizMoodZero: string;
   quizMoodZeroDesc: string;
   quizBaseAny: string;
+  quizBaseAnyDesc: string;
+  quizBaseGin: string;
+  quizBaseGinDesc: string;
+  quizBaseVodka: string;
+  quizBaseVodkaDesc: string;
+  quizBaseRum: string;
+  quizBaseRumDesc: string;
+  quizBaseWhiskey: string;
+  quizBaseWhiskeyDesc: string;
+  quizBaseTequila: string;
+  quizBaseTequilaDesc: string;
+  quizBaseCachaca: string;
+  quizBaseCachacaDesc: string;
   quizComplexityQuick: string;
   quizComplexityQuickDesc: string;
   quizComplexityCraft: string;
   quizComplexityCraftDesc: string;
+  quizEmptyTitle: string;
+  quizEmptyBody: string;
+  quizRecapLabel: string;
+  quizPicksCount: string;
+  quizSkipBaseNote: string;
+  quizProgressAria: string;
+  quizOptionsAria: string;
   favoritesEyebrow: string;
   favoritesTitle: string;
   favoritesSubtitle: string;
@@ -306,7 +326,7 @@ export const translations: Record<Language, TranslationDict> = {
     quizEyebrow: 'Sommelier Interativo',
     quizTitle: 'Qual drink combina com o momento?',
     quizSubtitle: 'Responda 3 perguntas rápidas para uma recomendação sob medida ao seu paladar.',
-    quizStepLabel: 'Etapa {step} de 3',
+    quizStepLabel: 'Etapa {step} de {total}',
     quizQ1: 'Qual clima você busca no primeiro gole?',
     quizQ2: 'Tem alguma base favorita para hoje?',
     quizQ3: 'Quanto tempo quer dedicar ao preparo?',
@@ -323,10 +343,30 @@ export const translations: Record<Language, TranslationDict> = {
     quizMoodZero: 'Zero Álcool',
     quizMoodZeroDesc: 'Todo o ritual da coquetelaria, sem álcool.',
     quizBaseAny: 'Tanto faz — me surpreenda',
+    quizBaseAnyDesc: 'Deixa o sommelier escolher a base.',
+    quizBaseGin: 'Gin',
+    quizBaseGinDesc: 'Botânico, seco, combina com cítricos.',
+    quizBaseVodka: 'Vodka',
+    quizBaseVodkaDesc: 'Limpo e versátil, palco para o mixer.',
+    quizBaseRum: 'Rum',
+    quizBaseRumDesc: 'Doce, tropical, com corpo de cana.',
+    quizBaseWhiskey: 'Bourbon / Whisky',
+    quizBaseWhiskeyDesc: 'Amadeirado, quente, clássicos de bar.',
+    quizBaseTequila: 'Tequila',
+    quizBaseTequilaDesc: 'Agave, sal, lima e energia.',
+    quizBaseCachaca: 'Cachaça',
+    quizBaseCachacaDesc: 'Brasil no copo — herbáceo e vibrante.',
     quizComplexityQuick: 'Prático (até 3 min)',
     quizComplexityQuickDesc: 'Poucos ingredientes, montado direto no copo.',
     quizComplexityCraft: 'Ritual de Bar',
     quizComplexityCraftDesc: 'Coqueteleira, guarnição caprichada e camadas de sabor.',
+    quizEmptyTitle: 'Nenhuma combinação nesta rodada',
+    quizEmptyBody: 'Tente outro clima ou base — a casa monta uma nova seleção na hora.',
+    quizRecapLabel: 'Seu briefing de paladar',
+    quizPicksCount: '{n} drinks sob medida',
+    quizSkipBaseNote: 'Base livre — rodada sem álcool',
+    quizProgressAria: 'Progresso do quiz: etapa {step} de {total}',
+    quizOptionsAria: 'Escolha uma opção para continuar',
     favoritesEyebrow: 'Sua Coleção Pessoal',
     favoritesTitle: 'Caderno de Drinks',
     favoritesSubtitle: 'Receitas favoritadas, suas notas pessoais e avaliações ficam salvas neste dispositivo.',
@@ -477,7 +517,7 @@ export const translations: Record<Language, TranslationDict> = {
     quizEyebrow: 'Interactive Sommelier',
     quizTitle: 'Which drink fits this moment?',
     quizSubtitle: 'Answer 3 quick questions for a tailored cocktail recommendation.',
-    quizStepLabel: 'Step {step} of 3',
+    quizStepLabel: 'Step {step} of {total}',
     quizQ1: 'What mood are you looking for in the first sip?',
     quizQ2: 'Do you have a preferred base spirit tonight?',
     quizQ3: 'How much time do you want to spend making it?',
@@ -494,10 +534,30 @@ export const translations: Record<Language, TranslationDict> = {
     quizMoodZero: 'Zero-Proof',
     quizMoodZeroDesc: 'Full cocktail ritual, no alcohol.',
     quizBaseAny: 'Anything — surprise me',
+    quizBaseAnyDesc: 'Let the sommelier pick the spirit.',
+    quizBaseGin: 'Gin',
+    quizBaseGinDesc: 'Botanical, dry, citrus-friendly.',
+    quizBaseVodka: 'Vodka',
+    quizBaseVodkaDesc: 'Clean and versatile — mixer-first.',
+    quizBaseRum: 'Rum',
+    quizBaseRumDesc: 'Cane-sweet, tropical body.',
+    quizBaseWhiskey: 'Bourbon / Whisky',
+    quizBaseWhiskeyDesc: 'Woody, warm, bar-classic.',
+    quizBaseTequila: 'Tequila',
+    quizBaseTequilaDesc: 'Agave, salt, lime, energy.',
+    quizBaseCachaca: 'Cachaça',
+    quizBaseCachacaDesc: 'Brazilian grass and brightness.',
     quizComplexityQuick: 'Quick (under 3 min)',
     quizComplexityQuickDesc: 'Few ingredients, built straight in the glass.',
     quizComplexityCraft: 'Craft Ritual',
     quizComplexityCraftDesc: 'Shaker, fresh garnish, layered notes.',
+    quizEmptyTitle: 'No match in this round',
+    quizEmptyBody: 'Try a different mood or base — the house will pour a new pairing.',
+    quizRecapLabel: 'Your tasting brief',
+    quizPicksCount: '{n} tailored pours',
+    quizSkipBaseNote: 'Open base — zero-proof round',
+    quizProgressAria: 'Quiz progress: step {step} of {total}',
+    quizOptionsAria: 'Choose an option to continue',
     favoritesEyebrow: 'Personal Collection',
     favoritesTitle: 'Cocktail Notebook',
     favoritesSubtitle: 'Saved cocktails, personal ratings, and tasting notes stay right on this device.',
