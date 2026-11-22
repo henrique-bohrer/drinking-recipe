@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Fraunces", Georgia, Cambria, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* ==========================================================================
+   Editorial Botanical Palette — Warm, Restful, Non-Fatiguing
+   ========================================================================== */
+:root,
+[data-theme="paper"] {
+  --bg-canvas: #f5f0e6;
+  --bg-surface: #fcf9f3;
+  --bg-muted: #ece4d6;
+  --bg-hover: #e3d9c7;
+  --border-subtle: #ddd3c1;
+  --border-strong: #c5b8a2;
+
+  --ink-primary: #1f2420;
+  --ink-secondary: #535c55;
+  --ink-muted: #788078;
+  --ink-on-accent: #fcf9f3;
+
+  --accent-primary: #2b5440;
+  --accent-primary-hover: #214232;
+  --accent-primary-soft: #e2ebe5;
+
+  --accent-warm: #b55838;
+  --accent-warm-soft: #f5e5de;
+
+  --accent-amber: #a87224;
+  --accent-amber-soft: #f5ebd8;
+
+  --shadow-card: 0 1px 2px rgba(31, 36, 32, 0.05), 0 6px 18px rgba(31, 36, 32, 0.04);
+  --shadow-elevated: 0 12px 32px rgba(31, 36, 32, 0.12), 0 2px 6px rgba(31, 36, 32, 0.06);
+  color-scheme: light;
+}
+
+[data-theme="speakeasy"] {
+  --bg-canvas: #161513;
+  --bg-surface: #1f1d1a;
+  --bg-muted: #292622;
+  --bg-hover: #332f29;
+  --border-subtle: #332f29;
+  --border-strong: #4a433a;
+
+  --ink-primary: #ede7dc;
+  --ink-secondary: #b5ac9e;
+  --ink-muted: #847c70;
+  --ink-on-accent: #161513;
+
+  --accent-primary: #72ab8c;
+  --accent-primary-hover: #87bc9f;
+  --accent-primary-soft: #1f3127;
+
+  --accent-warm: #d98462;
+  --accent-warm-soft: #33221b;
+
+  --accent-amber: #d8a251;
+  --accent-amber-soft: #312718;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.28), 0 6px 20px rgba(0, 0, 0, 0.22);
+  --shadow-elevated: 0 18px 42px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background-color: var(--bg-canvas);
+    color: var(--ink-primary);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--bg-canvas);
+    color: var(--ink-primary);
+    transition: background-color 220ms ease, color 220ms ease;
+    /* Ultra-subtle linen paper grain via pure CSS radial dot — zero GPU blur cost */
+    background-image: radial-gradient(color-mix(in srgb, var(--ink-primary) 4%, transparent) 0.75px, transparent 0.75px);
+    background-size: 22px 22px;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-editorial {
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* Editorial utilities */
+.editorial-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.editorial-card-interactive:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.editorial-rule {
+  border-color: var(--border-subtle);
+}
+
+/* Custom subtle scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Tactile modal & view animations */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardShuffle {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  35% {
+    transform: rotate(-1.5deg) scale(0.985);
+    opacity: 0.65;
+  }
+  70% {
+    transform: rotate(1.2deg) scale(0.99);
+    opacity: 0.75;
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-up {
+  animation: fadeSlideUp 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-shuffle {
+  animation: cardShuffle 480ms ease-in-out infinite;
+}
+
+/* Safe area padding for iOS/Android mobile bottom navigation */
+.pb-safe {
+  padding-bottom: max(0.6rem, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-shuffle {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
